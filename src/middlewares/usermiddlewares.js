@@ -14,15 +14,15 @@ const roleForUser = (req, res, next) => {
 };
 
 
-// const roleForUser = (req, res, next) => {
-//     if(req.roles.includes("USER")) {
-//         return res.send("Kamu pengguna");
-        
-//     }else if(req.roles.includes("ADMIN")) {
-//         return res.send("Kamu administrator");
-//     }
-//     next();
-// };
+// allow for regular user only
+const userAuthorization = (req, res, next) => {
+    if(req.roles.includes("ADMIN")) {
+        return res.status(403).json({message: "You are not allowed to access this page."});
+    }
+    if(req.roles.includes("USER")) {
+        return next();
+    }
+};
 
 const updateUserNameMiddleware = (req, res, next) => {
     const reqId = req.id;
@@ -104,7 +104,7 @@ const activateUserMiddleware = async (req, res, next) => {
 module.exports = {
     roleForUser, updateUserNameMiddleware,
     validateUserAddressOwnership, validateUserActive,
-    activateUserMiddleware
+    activateUserMiddleware, userAuthorization
 };
 
 
