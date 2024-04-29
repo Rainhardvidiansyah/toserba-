@@ -6,7 +6,6 @@ const UserAddressController = require('../controller/useraddresscontroller');
 const {roleForUser, updateUserNameMiddleware, validateUserAddressOwnership, validateUserActive, activateUserMiddleware} = require('../middlewares/usermiddlewares');
 const jwtVerification = require('../middlewares/jwtmiddlewares');
 
-// const auth = [];
 
 const updatNameMiddleware = [jwtVerification, updateUserNameMiddleware];
 const isUserActive = [jwtVerification, validateUserActive];
@@ -20,23 +19,27 @@ router.get("/user/isactive", isUserActive, (req, res)=>{
     res.send("You are active user");
 });
 
+//activate user 
+router.get("/user/activate", activateUserMiddleware, userController.activateUser);
+//end of activate user
+
 router.get("/test-path", (req, res) => {
     const path = req.path;
     res.send(path);
 });
 
+router.get("/test-headers", (req, res) => {
+    const auth = req.headers;
+    res.send(auth);
+});
 
 
-//activate user 
-router.get("/user/activate", activateUserMiddleware, userController.activateUser);
-//end of activate user
-
-
+const validateAddress = [jwtVerification, validateUserAddressOwnership];
 
 // START OF ADDRESS
 router.post("/user/create-address", jwtVerification, UserAddressController.createUserAddress);
-router.put("/user/update-address/:id", jwtVerification, validateUserAddressOwnership, UserAddressController.updateUserAddress);
-router.delete("/user/delete-address/:id", jwtVerification, validateUserAddressOwnership, UserAddressController.deleteUserAddress);
+router.put("/user/update-address/:id", validateAddress, UserAddressController.updateUserAddress);
+router.delete("/user/delete-address/:id", validateAddress, UserAddressController.deleteUserAddress);
 // END OF ADDRESS
 
 router.get('/router', jwtVerification, (req, res) => {
